@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  PÁGINA DE AFILIADO — ACHADINHOS DA SHOPEE
+  ============================================================
+  Arquivo único (HTML + CSS + um pouco de JS), sem dependências
+  externas. Pronto para subir no GitHub Pages.
+
+  PONTOS QUE VOCÊ PRECISA SUBSTITUIR (procure por "SUBSTITUA"):
+  1. Sua foto real            -> dentro de <header>, no avatar
+  2. Seu texto "Sobre mim"    -> seção #sobre-mim
+  3. Links de afiliado        -> atributo href de cada botão "Ver na Shopee"
+  4. Nome/descrição/preço     -> dentro de cada <article class="card">
+  5. Links das redes sociais  -> seção <footer>, Instagram e TikTok
+  6. Seu nome no rodapé       -> dentro de <footer>
+  ============================================================
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛍️ Achadinhos da Shopee</title>
+  <meta name="description" content="Seleção pessoal de produtos da Shopee que valem a pena. Página de afiliado com recomendações honestas.">
+
+  <!-- SUBSTITUA: se quiser, ajuste os textos de pré-visualização usados quando a página é compartilhada -->
+  <meta property="og:title" content="🛍️ Achadinhos da Shopee">
+  <meta property="og:description" content="Seleção pessoal de produtos que valem a pena.">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon em emoji, sem precisar de arquivo externo -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍️</text></svg>">
+
+  <style>
+    /* ============================================================
+       TOKENS DE DESIGN
+       ============================================================ */
+    :root {
+      --color-bg: #FFF8F4;
+      --color-bg-soft: #FFEEE4;
+      --color-surface: #FFFFFF;
+      --color-text: #2B2019;
+      --color-text-muted: #6B5A50;
+      --color-primary: #EE4D2D;       /* laranja/vermelho Shopee - destaques e bordas */
+      --color-primary-dark: #C93F22;  /* usado em botões de texto, contraste melhor */
+      --color-primary-light: #FF7A4D;
+      --color-gold: #F2A900;
+      --color-border: #F1DDD0;
+      --color-footer-bg: #241813;
+      --color-footer-text: #F3E7DF;
+
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --container-w: 760px;
+    }
+
+    /* ============================================================
+       RESET BÁSICO
+       ============================================================ */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    h1, h2, h3, p, ol, ul { margin: 0; }
+    ul, ol { padding: 0; list-style: none; }
+
+    /* Foco visível para acessibilidade (navegação por teclado) */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--color-primary-dark);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; animation: none !important; }
+    }
+
+    .container {
+      max-width: var(--container-w);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ============================================================
+       CABEÇALHO / HERO
+       ============================================================ */
+    .hero {
+      text-align: center;
+      padding: 48px 20px 36px;
+      background: radial-gradient(circle at 50% 0%, var(--color-bg-soft) 0%, var(--color-bg) 65%);
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      border: 4px solid var(--color-surface);
+      box-shadow: 0 4px 14px rgba(201, 63, 34, 0.25);
+    }
+    /*
+      SUBSTITUA: troque a div .avatar por uma imagem real, por exemplo:
+      <img class="avatar" src="minha-foto.jpg" alt="Foto de [seu nome]">
+      (nesse caso, remova o estilo de gradiente/emoji ou ajuste o CSS acima)
+    */
+
+    .hero h1 {
+      font-size: clamp(1.7rem, 5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p.subtitle {
+      margin-top: 8px;
+      color: var(--color-text-muted);
+      font-size: 1.02rem;
+      max-width: 38ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ============================================================
+       AVISO DE AFILIADO
+       ============================================================ */
+    .disclosure {
+      background: var(--color-bg-soft);
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      font-size: 0.96rem;
+      color: var(--color-text);
+      margin: 0 0 40px;
+    }
+
+    /* ============================================================
+       SEÇÕES GERAIS
+       ============================================================ */
+    section { margin-bottom: 52px; }
+
+    .section-heading {
+      font-size: 1.4rem;
+      font-weight: 750;
+      margin-bottom: 6px;
+    }
+    .section-lead {
+      color: var(--color-text-muted);
+      font-size: 0.97rem;
+      margin-bottom: 22px;
+    }
+
+    /* ============================================================
+       GRID DE PRODUTOS
+       ============================================================ */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(43, 32, 25, 0.08);
+    }
+
+    .card-emoji {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: var(--color-bg-soft);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--color-primary-dark);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 999px;
+      line-height: 1;
+    }
+    .badge.gold { background: var(--color-gold); color: #3a2900; }
+
+    .card h3 {
+      font-size: 0.96rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      color: var(--color-text-muted);
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .card-price {
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      font-size: 1.02rem;
+      margin-top: 2px;
+    }
+
+    .btn {
+      margin-top: 6px;
+      display: inline-block;
+      text-align: center;
+      background: var(--color-primary-dark);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: background 0.15s ease;
+    }
+    .btn:hover { background: #a8331b; }
+
+    /* ============================================================
+       COMO FUNCIONA
+       ============================================================ */
+    .steps {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--color-primary);
+      color: var(--color-primary-dark);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+    .step h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .step p {
+      color: var(--color-text-muted);
+      font-size: 0.92rem;
+    }
+
+    @media (min-width: 640px) {
+      .steps { grid-template-columns: repeat(3, 1fr); }
+      .step { flex-direction: column; text-align: left; }
+    }
+
+    /* ============================================================
+       SOBRE MIM
+       ============================================================ */
+    .about-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+    .about-card p {
+      font-size: 0.98rem;
+      color: var(--color-text);
+    }
+    .about-card p + p { margin-top: 12px; }
+
+    /* ============================================================
+       RODAPÉ
+       ============================================================ */
+    footer {
+      background: var(--color-footer-bg);
+      color: var(--color-footer-text);
+      padding: 36px 20px 28px;
+      text-align: center;
+    }
+    footer .footer-disclosure {
+      max-width: 46ch;
+      margin: 0 auto 18px;
+      font-size: 0.86rem;
+      opacity: 0.85;
+      line-height: 1.5;
+    }
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .socials a {
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--color-footer-text);
+      border: 1px solid rgba(243, 231, 223, 0.3);
+      padding: 8px 16px;
+      border-radius: 999px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .socials a:hover {
+      background: rgba(243, 231, 223, 0.08);
+      border-color: rgba(243, 231, 223, 0.6);
+    }
+    footer .copyright {
+      font-size: 0.78rem;
+      opacity: 0.65;
+    }
+
+    @media (min-width: 900px) {
+      .hero { padding-top: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       1. CABEÇALHO
+       ============================================================ -->
+  <header class="hero">
+    <div class="avatar" aria-hidden="true">📷</div>
+    <h1>🛍️ Achadinhos da Shopee</h1>
+    <p class="subtitle">Seleção pessoal de produtos que valem a pena</p>
+  </header>
+
+  <div class="container">
+
+    <!-- ============================================================
+         2. AVISO DE AFILIADO (obrigatório e visível)
+         ============================================================ -->
+    <div class="disclosure">
+      ⚠️ <strong>Aviso:</strong> Esta página contém links de afiliado da Shopee.
+      Ao comprar através deles, posso receber uma pequena comissão, sem
+      nenhum custo extra para você.
+    </div>
+
+    <!-- ============================================================
+         3. GRID DE PRODUTOS
+         SUBSTITUA: nome, descrição, preço, emoji, selo e o link de
+         afiliado (href) de cada card pelos seus produtos reais.
+         ============================================================ -->
+    <section id="produtos">
+      <h2 class="section-heading">Meus achadinhos</h2>
+      <p class="section-lead">Produtos que pesquisei e que acho que valem o preço pedido.</p>
+
+      <div class="product-grid">
+
+        <article class="card">
+          <span class="badge">🔥 Mais vendido</span>
+          <div class="card-emoji" aria-hidden="true">🎧</div>
+          <h3>Fone de Ouvido Bluetooth</h3>
+          <p class="card-desc">Bom custo-benefício para o dia a dia</p>
+          <p class="card-price">R$ 39,90</p>
+          <!-- SUBSTITUA "#" pelo seu link de afiliado real -->
+          <a class="btn" href="#" target="_blank" rel="sponsored noopener">Ver na Shopee</a>
+        </article>
+
+        <article class="card">
+          <div class="card-emoji" aria-hidden="true">🔌</div>
+          <h3>Organizador de Cabos</h3>
+          <p class="card-desc">Deixa a mesa muito mais arrumada</p>
+          <p class="card-price">R$ 19,90</p>
+          <a class="btn" href="#" target="_blank" rel="sponsored noopener">Ver na Shopee</a>
+        </article>
+
+        <article class="card">
+          <span class="badge gold">💰 Comissão extra</span>
+          <div class="card-emoji" aria-hidden="true">💡</div>
+          <h3>Luminária de Mesa LED</h3>
+          <p class="card-desc">Três tons de luz, ótima pra estudar</p>
+          <p class="card-price">R$ 34,90</p>
+          <a class="btn" href="#" target="_blank" rel="sponsored noopener">Ver na Shopee</a>
+        </article>
+
+        <article class="card">
+          <div class="card-emoji" aria-hidden="true">🍶</div>
+          <h3>Garrafa Térmica 1L</h3>
+          <p class="card-desc">Mantém a bebida gelada por horas</p>
+          <p class="card-price">R$ 27,90</p>
+          <a class="btn" href="#" target="_blank" rel="sponsored noopener">Ver na Shopee</a>
+        </article>
+
+        <article class="card">
+          <div class="card-emoji" aria-hidden="true">📱</div>
+          <h3>Suporte de Celular para Carro</h3>
+          <p class="card-desc">Prático pra usar o GPS com segurança</p>
+          <p class="card-price">R$ 22,90</p>
+          <a class="btn" href="#" target="_blank" rel="sponsored noopener">Ver na Shopee</a>
+        </article>
+
+        <article class="card">
+          <span class="badge">🔥 Mais vendido</span>
+          <div class="card-emoji" aria-hidden="true">🧹</div>
+          <h3>Mini Aspirador Portátil</h3>
+          <p class="card-desc">Ótimo pra limpar o carro e a mesa</p>
+          <p class="card-price">R$ 45,90</p>
+          <a class="btn" href="#" target="_blank" rel="sponsored noopener">Ver na Shopee</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         4. COMO FUNCIONA
+         ============================================================ -->
+    <section id="como-funciona">
+      <h2 class="section-heading">Como funciona</h2>
+      <p class="section-lead">Simples, rápido e sem burocracia.</p>
+
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num">1</span>
+          <div>
+            <h3>Clique no produto que te interessou</h3>
+            <p>Escolha qualquer item da lista acima.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">2</span>
+          <div>
+            <h3>Você será redirecionado para a Shopee</h3>
+            <p>O link abre direto na página do produto, no app ou no site.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">3</span>
+          <div>
+            <h3>Finalize a compra normalmente</h3>
+            <p>Você paga o mesmo preço, e eu recebo uma pequena comissão.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================================================
+         5. SOBRE MIM
+         SUBSTITUA o texto abaixo pelo seu próprio.
+         ============================================================ -->
+    <section id="sobre-mim">
+      <h2 class="section-heading">Sobre mim</h2>
+      <div class="about-card">
+        <p>
+          Oi, tudo bem? Aqui eu reúno produtos da Shopee que pesquisei com
+          calma e que acho que têm um bom custo-benefício pra quem me
+          acompanha no Instagram e no TikTok.
+        </p>
+        <p>
+          Não recomendo nada só porque "é afiliado" — se um produto não me
+          convencer, ele não entra na lista. Qualquer dúvida, me chama nas
+          redes sociais!
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============================================================
+       6. RODAPÉ
+       SUBSTITUA os links de Instagram/TikTok e o seu nome.
+       ============================================================ -->
+  <footer>
+    <p class="footer-disclosure">
+      💬 Esta página contém links de afiliado da Shopee. Posso ganhar
+      comissão nas compras feitas por aqui, sem custo extra para você.
+    </p>
+    <div class="socials">
+      <!-- SUBSTITUA pelos links reais das suas redes -->
+      <a href="#" target="_blank" rel="noopener">📸 Instagram</a>
+      <a href="#" target="_blank" rel="noopener">🎵 TikTok</a>
+    </div>
+    <p class="copyright">
+      © <span id="year"></span> Gabriel Machado Cavalcante — Todos os direitos reservados.
+    </p>
+  </footer>
+
+  <script>
+    // Atualiza o ano automaticamente no rodapé
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
